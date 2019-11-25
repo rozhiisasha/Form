@@ -1,0 +1,5 @@
+services:
+  form_validate.validation:
+    class: Drupal\form_validate\Validation
+  form_validate.gettableinfo:
+    class: Drupal\form_validate\GetTableInfo

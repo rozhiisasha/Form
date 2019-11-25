@@ -2,12 +2,8 @@
 
 namespace Drupal\form_validate\Form;
 
-//use Drupal\Core\Ajax\AjaxResponse;
-//use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Messenger\MessengerInterface;
-use phpDocumentor\Reflection\Types\Parent_;
 
 class FormValidation extends FormBase {
 
@@ -209,51 +205,9 @@ class FormValidation extends FormBase {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $form_state->set('valid', TRUE);
     if ($_POST['new'] == 'Submit') {
-      $t = 0;
-      foreach ($_POST as $key => $value) {
-        $key_to_value = explode('_', $key);
-        if ($t != $key_to_value[0]) {
-          unset($row);
-          $t = $key_to_value[0];
-        }
-        if (is_numeric($key_to_value[2])) {
-          $arr[] = $value;
-          $row[$key_to_value[1]] = $arr;
-          $table[$key_to_value[0]] = $row;
-          foreach ($arr as $k => $v) {
-            if ($key_to_value[2] == 12) {
-              unset($arr);
-            }
-          }
-        }
-      }
-      $t = 0;
-      $rows = 0;
-      for ($y = 0; $y < count($table); $y++) {
-        for ($r = 1; $r <= count($table[$y]); $r++) {
-          if ($t != $y) {
-            unset($arr1);
-            unset($row1);
-            $t = $y;
-          }
-          if ($rows != $r) {
-            unset($arr1);
-            $rows = $r;
-          }
-          foreach ($table[$y][$r] as $key => $val) {
-            if (is_numeric($val)) {
-              $arr1[$key] = $val;
-              $row1[$r] = $arr1;
-              $table1[$y] = $row1;
-            }
-            else {
-              $arr1['empty'] = 0;
-              $row1[$r] = $arr1;
-              $table1[$y] = $row1;
-            }
-          }
-        }
-      }
+      $table = \Drupal::service('form_validate.gettableinfo')->getTable();
+      $table_not_empty_el = \Drupal::service('form_validate.gettableinfo')->NotEmptyElement($table);
+
       for ($y = 0; $y < count($table); $y++) {
         $arra = [];
         for ($r = 1; $r <= count($table[$y]); $r++) {
@@ -277,26 +231,9 @@ class FormValidation extends FormBase {
         }
       }
       if ($form_state->get('valid')) {
-        for ($y = 0; $y < count($table1); $y++) {
-          for ($i = 0; $i < count($table1[$y]); $i++) {
-            if ($table1[$y + 1] != NULL) {
-              $a = array_intersect_key($table1[$y], $table1[$y + 1]);
-              $b = array_intersect_key($table1[$y + 1], $table1[$y]);
-              foreach ($a as $ka => $va) {
-                foreach ($b as $kb => $vb) {
-                  if ($ka == $kb) {
-                    $a1 = array_diff_key($va, $vb);
-                    $b1 = array_diff_key($vb, $va);
-                    if ((!empty($a1)) || (!empty($b1))) {
-                      $form_state->set('valid', FALSE);
-                      break 4;
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+        $valid = TRUE;
+        $value_valid_storage = \Drupal::service('form_validate.validation')->ValidateTable($valid,$table_not_empty_el);
+        $form_state->set('valid',$value_valid_storage);
       }
     }
   }
