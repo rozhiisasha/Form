@@ -22,12 +22,6 @@ class Validation {
                   $form_state = FALSE;
                   break 4;
                 }
-                /*If need a empty table wil be invalid*/
-                $a3 = array_intersect_key($this->table1[$y], $this->table1[$y + 1]);
-                $b3 = array_intersect_key($this->table1[$y + 1], $this->table1[$y]);
-                if(($a3[$ka]['empty'] === 0 ) && ($b3[$kb]['empty'] === 0)){
-                  $form_state = FALSE;
-                }
               }
             }
           }
