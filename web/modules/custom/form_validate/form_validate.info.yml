@@ -1,0 +1,6 @@
+name: Form Validate
+description: 'Form Validate -module for qiwi custom form'
+type: module
+core: 8.x
+version: 1.0
+package: Custom

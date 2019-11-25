@@ -1,0 +1,6 @@
+form_validate:
+  css:
+    theme:
+      css/style.css: {}
+  js:
+    js/script.js: {}

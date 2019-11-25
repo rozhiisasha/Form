@@ -1,0 +1,6 @@
+form_validate.form:
+  path: '/form'
+  defaults:
+    _form: '\Drupal\form_validate\Form\FormValidation'
+  requirements:
+    _permission: 'view content'
