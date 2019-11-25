@@ -207,29 +207,10 @@ class FormValidation extends FormBase {
     if ($_POST['new'] == 'Submit') {
       $table = \Drupal::service('form_validate.gettableinfo')->getTable();
       $table_not_empty_el = \Drupal::service('form_validate.gettableinfo')->NotEmptyElement($table);
-
-      for ($y = 0; $y < count($table); $y++) {
-        $arra = [];
-        for ($r = 1; $r <= count($table[$y]); $r++) {
-          krsort($table[$y][$r]);
-          $arra = array_merge($arra, $table[$y][$r]);
-        }
-        $table[$y] = $arra;
-        unset($arra);
-        for ($i = 0; $i < count($table[$y]); $i++) {
-          if (is_numeric($table[$y][$i])) {
-            $a = $i;
-            if (!is_numeric($table[$y][$i + 1])) {
-              for ($i = $a + 1; $i < count($table[$y]); $i++) {
-                if (is_numeric($table[$y][$i])) {
-                  $form_state->set('valid', FALSE);
-                  break 2;
-                }
-              }
-            }
-          }
-        }
-      }
+      $valid = TRUE;
+      $value_valid_storage = \Drupal::service('form_validate.validation')
+        ->ValidateMounth($valid,$table);
+      $form_state->set('valid', $value_valid_storage);
       if ($form_state->get('valid')) {
         $valid = TRUE;
         $value_valid_storage = \Drupal::service('form_validate.validation')->ValidateTable($valid,$table_not_empty_el);
