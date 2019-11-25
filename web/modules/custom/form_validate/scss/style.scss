@@ -1,0 +1,39 @@
+#form-validation {
+  table {
+    tr {
+      th {
+        background-color: #5a5a5a;
+        color: #ffffff;
+      }
+
+      th, td {
+        border: 1px solid #333;
+      }
+    }
+
+    tbody {
+      tr:last-child {
+        td {
+          border: none;
+        }
+      }
+      tr:not(:last-child){
+        td{
+          background: #999;
+          input[type=text]{
+            background-color: #5a5a5a;
+            color: #ffffff;
+            font-weight: bolder;
+          }
+          input{
+            color: #ffffff;
+            background: #999;
+          }
+        }
+        td:nth-child(4n+1), td:last-child{
+          background-color: #5a5a5a;
+        }
+      }
+    }
+  }
+}
