@@ -2,21 +2,34 @@
 
 namespace Drupal\form_validate\Form;
 
-//use Drupal\Core\Ajax\AjaxResponse;
-//use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Messenger\MessengerInterface;
-use phpDocumentor\Reflection\Types\Parent_;
 
+/**
+ * Class FormValidation.
+ *
+ * @package Drupal\form_validate\Form
+ */
 class FormValidation extends FormBase {
 
+  /**
+   * @var.
+   */
   public $year;
 
+  /**
+   * @return string
+   */
   public function getFormId() {
     return 'form_validation';
   }
 
+  /**
+   * @param  array  $form
+   * @param  \Drupal\Core\Form\FormStateInterface  $form_state
+   *
+   * @return array
+   */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $this->year = date('Y');
     $num_of_table = $form_state->get('num_of_table');
@@ -33,7 +46,7 @@ class FormValidation extends FormBase {
     ];
     $form['actions']['newtable'] = [
       '#type'   => 'submit',
-      '#value'  => $this->t('Add Table'),
+      '#value'  => $this->t('add Table'),
       '#submit' => ['::AddTable'],
     ];
     $mounth['year'] = 'Year';
@@ -81,7 +94,9 @@ class FormValidation extends FormBase {
               '#min'      => 0,
               '#value'    => $value_k,
               '#step'     => 0.001,
-              '#attributes' => ['readonly'=>TRUE,],
+              '#attributes' => [
+                'readonly' => TRUE,
+              ],
               '#id'       => $key . $y . $i,
               '#name'     => $y . '.' . $i . '.' . $key,
             ];
@@ -93,7 +108,9 @@ class FormValidation extends FormBase {
               '#value'    => $value_k,
               '#step'     => 0.001,
               '#min'      => 0,
-              '#attributes' => ['readonly'=>TRUE,],
+              '#attributes' => [
+                'readonly' => TRUE,
+              ],
               '#name'     => $y . '.' . $i . '.' . $key,
               '#id'       => $y . $i . $key,
             ];
@@ -147,42 +164,37 @@ class FormValidation extends FormBase {
           '#type'   => 'submit',
           '#value'  => $this->t('Add Year'),
           '#name'   => 'new_row_to' . $y,
-          '#submit' => ['::AddRow'],
+          '#submit' => ['::addRow'],
         ];
 
       }
-      //sort, because we must output table after
+      /*sort, because we must output table after*/
       krsort($form['mounth'][$y]);
     }
     $form['#attached']['library'][] = 'form_validate/form_validate';
-    //    dd($form);
     return $form;
   }
 
   /**
-   * Function AddRow.
+   * Function addRow.
    *  For add row to table.
    *
    * @param  array  $form
    * @param  \Drupal\Core\Form\FormStateInterface  $form_state
    */
-  public
-  function AddRow(
-    array &$form,
-    FormStateInterface $form_state
-  ) {
+  public function addRow(array &$form, FormStateInterface $form_state) {
     $year = $form_state->get('year');
-    //find from what table we get request
+    /*find from what table we get request*/
     foreach ($_POST as $key => $value) {
       if ($value == 'Add Year') {
         $key_name = substr($key, -1, 1);
-        //$key_name now equal number table
+        /*$key_name now equal number table*/
         break;
       }
     }
     $year[$key_name]--;
     $form_state->set('year', $year);
-    //rebuild table for output new row
+    /*rebuild table for output new row*/
     $form_state->setRebuild();
   }
 
@@ -193,19 +205,18 @@ class FormValidation extends FormBase {
    * @param  array  $form
    * @param  \Drupal\Core\Form\FormStateInterface  $form_state
    */
-  public
-  function AddTable(
-    array &$form,
-    FormStateInterface $form_state
-  ) {
-    //    get value
+  public function addTable(array &$form, FormStateInterface $form_state) {
     $num_of_table = $form_state->get('num_of_table');
     $num_of_table++;
     $form_state->set('num_of_table', $num_of_table);
-    //rebuild form for output new table
+    /*rebuild form for output new table*/
     $form_state->setRebuild();
   }
 
+  /**
+   * @param  array  $form
+   * @param  \Drupal\Core\Form\FormStateInterface  $form_state
+   */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $form_state->set('valid', TRUE);
     if ($_POST['new'] == 'Submit') {
@@ -295,16 +306,20 @@ class FormValidation extends FormBase {
                 }
               }
             }
+            if (count($table1[$y][$i]) == 1) {
+              $form_state->set('valid', FALSE);
+            }
           }
         }
       }
     }
   }
 
-  function submitForm(
-    array &$form,
-    FormStateInterface $form_state
-  ) {
+  /**
+   * @param  array  $form
+   * @param  \Drupal\Core\Form\FormStateInterface  $form_state
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $valid = $form_state->get('valid');
     $messenger = \Drupal::messenger();
     if ($valid) {
@@ -315,4 +330,5 @@ class FormValidation extends FormBase {
     }
     $form_state->setRebuild();
   }
+
 }
