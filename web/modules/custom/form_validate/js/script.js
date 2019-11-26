@@ -4,9 +4,9 @@ function SumQuart(now) {
   let table = array_key[0];
   let rows = array_key[1];
   let mounth = array_key[2];
-  if(document.getElementById(id).value === '0'){
-    document.getElementById(id).value = '';
-  }
+  // if(document.getElementById(id).value === '0'){
+  //   document.getElementById(id).value = '';
+  // }
   if ((mounth === '1') || (mounth === '2') || (mounth === '3')) {
     let va = 0;
     for (let i = 1; i <= 3; i++) {
