@@ -2,12 +2,40 @@
 
 namespace Drupal\form_validate;
 
+/**
+ * Class Validation
+ *
+ * @package Drupal\form_validate
+ */
 class Validation {
 
+  /**
+   * @var
+   */
   public $table1;
+
+  /**
+   * @var
+   */
   public $table;
 
-  public function ValidateTable($form_state, $table_not_empty_el) {
+  /**
+   * @var
+   */
+  public $form_state;
+
+  /**
+   * @var
+   */
+  public $table_not_empty_el;
+
+  /**
+   * @param $form_state
+   * @param $table_not_empty_el
+   *
+   * @return bool
+   */
+  public function validateTable($form_state, $table_not_empty_el) {
     $this->table1 = $table_not_empty_el;
     for ($y = 0; $y < count($this->table1); $y++) {
       for ($i = 0; $i < count($this->table1[$y]); $i++) {
@@ -27,35 +55,48 @@ class Validation {
             }
           }
         }
+        /*For empty table*/
+        /*if (count($this->table1[$y][$i]) == 1) {
+        $form_state = FALSE;
+        }*/
       }
     }
     return $form_state;
   }
 
-  public function ValidateMounth($form_state,$table){
+  /**
+   * @param $table
+   *
+   * @return mixed
+   */
+  public function validateMount($table) {
     $this->table = $table;
-    for ($y = 0; $y < count( $this->table); $y++) {
+    for ($y = 0; $y < count($this->table); $y++) {
       $arra = [];
-      for ($r = 1; $r <= count( $this->table[$y]); $r++) {
-        krsort( $this->table[$y][$r]);
-        $arra = array_merge($arra,  $this->table[$y][$r]);
+      for ($r = 1; $r <= count($this->table[$y]); $r++) {
+        krsort($this->table[$y][$r]);
+        $arra = array_merge($arra, $this->table[$y][$r]);
       }
       $this->table[$y] = $arra;
       unset($arra);
-      for ($i = 0; $i < count( $this->table[$y]); $i++) {
-        if (is_numeric( $this->table[$y][$i])) {
+      for ($i = 0; $i < count($this->table[$y]); $i++) {
+        if (is_numeric($this->table[$y][$i])) {
           $a = $i;
-          if (!is_numeric( $this->table[$y][$i + 1])) {
-            for ($i = $a + 1; $i < count( $this->table[$y]); $i++) {
-              if (is_numeric( $this->table[$y][$i])) {
-                $form_state = FALSE;
+          if (!is_numeric($this->table[$y][$i + 1])) {
+            for ($i = $a + 1; $i < count($this->table[$y]); $i++) {
+              if (is_numeric($this->table[$y][$i])) {
+                $this->form_state = FALSE;
                 break 2;
               }
             }
           }
         }
+        else {
+          $this->form_state = TRUE;
+        }
       }
     }
-    return $form_state;
+    return $this->form_state;
   }
+
 }

@@ -3,14 +3,27 @@
 
 namespace Drupal\form_validate;
 
-
+/**
+ * Class GetTableInfo
+ *
+ * @package Drupal\form_validate
+ */
 class GetTableInfo {
-  public $table;
-  public $table1;
-  public $arr;
-  public $row;
 
-  function getTable(){
+  /**
+   * @var
+   */
+  public $table;
+
+  /**
+   * @var
+   */
+  public $table1;
+
+  /**
+   * @return mixed
+   */
+  public function getTable() {
     $t = 0;
     foreach ($_POST as $key => $value) {
       $key_to_value = explode('_', $key);
@@ -19,10 +32,10 @@ class GetTableInfo {
         $t = $key_to_value[0];
       }
       if (is_numeric($key_to_value[2])) {
-        $this->arr[] = $value;
-        $this->row[$key_to_value[1]] = $this->arr;
-        $this->table[$key_to_value[0]] = $this->row;
-        foreach ($this->arr as $k => $v) {
+        $arr[] = $value;
+        $row[$key_to_value[1]] = $arr;
+        $this->table[$key_to_value[0]] = $row;
+        foreach ($arr as $k => $v) {
           if ($key_to_value[2] == 12) {
             unset($arr);
           }
@@ -32,7 +45,12 @@ class GetTableInfo {
     return $this->table;
   }
 
-  function NotEmptyElement($table){
+  /**
+   * @param $table
+   *
+   * @return mixed
+   */
+  public function notEmptyElement($table) {
     $t = 0;
     $rows = 0;
     $this->table = $table;
@@ -63,4 +81,5 @@ class GetTableInfo {
     }
     return $this->table1;
   }
+
 }
