@@ -1,24 +1,33 @@
 #form-validation table tr th {
   background-color: #5a5a5a;
-  color: #ffffff; }
+  color: #ffffff;
+}
 
-#form-validation table tr th, #form-validation table tr td {
-  border: 1px solid #333; }
+#form-validation table tr th,
+#form-validation table tr td {
+  border: 1px solid #333;
+}
 
 #form-validation table tbody tr:last-child td {
-  border: none; }
+  border: none;
+}
 
 #form-validation table tbody tr:not(:last-child) td {
-  background: #999; }
-  #form-validation table tbody tr:not(:last-child) td input[type=text] {
-    background-color: #5a5a5a;
-    color: #ffffff;
-    font-weight: bolder; }
-  #form-validation table tbody tr:not(:last-child) td input {
-    color: #ffffff;
-    background: #999; }
+  background: #999;
+}
+#form-validation table tbody tr:not(:last-child) td input[type=text] {
+  background-color: #5a5a5a;
+  color: #ffffff;
+  font-weight: bolder;
+}
+#form-validation table tbody tr:not(:last-child) td input {
+  color: #ffffff;
+  background: #999;
+}
 
-#form-validation table tbody tr:not(:last-child) td:nth-child(4n+1), #form-validation table tbody tr:not(:last-child) td:last-child {
-  background-color: #5a5a5a; }
+#form-validation table tbody tr:not(:last-child) td:nth-child(4n+1),
+#form-validation table tbody tr:not(:last-child) td:last-child {
+  background-color: #5a5a5a;
+}
 
 /*# sourceMappingURL=data:application/json;charset=utf8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInN0eWxlLnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFJUSx5QkFBeUI7RUFDekIsY0FBYyxFQUFBOztBQUx0QjtFQVNRLHNCQUFzQixFQUFBOztBQVQ5QjtFQWdCVSxZQUFZLEVBQUE7O0FBaEJ0QjtFQXFCVSxnQkFBZ0IsRUFBQTtFQXJCMUI7SUF1QlkseUJBQXlCO0lBQ3pCLGNBQWM7SUFDZCxtQkFBbUIsRUFBQTtFQXpCL0I7SUE0QlksY0FBYztJQUNkLGdCQUFnQixFQUFBOztBQTdCNUI7RUFpQ1UseUJBQXlCLEVBQUEiLCJmaWxlIjoic3R5bGUuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiI2Zvcm0tdmFsaWRhdGlvbiB7XG4gIHRhYmxlIHtcbiAgICB0ciB7XG4gICAgICB0aCB7XG4gICAgICAgIGJhY2tncm91bmQtY29sb3I6ICM1YTVhNWE7XG4gICAgICAgIGNvbG9yOiAjZmZmZmZmO1xuICAgICAgfVxuXG4gICAgICB0aCwgdGQge1xuICAgICAgICBib3JkZXI6IDFweCBzb2xpZCAjMzMzO1xuICAgICAgfVxuICAgIH1cblxuICAgIHRib2R5IHtcbiAgICAgIHRyOmxhc3QtY2hpbGQge1xuICAgICAgICB0ZCB7XG4gICAgICAgICAgYm9yZGVyOiBub25lO1xuICAgICAgICB9XG4gICAgICB9XG4gICAgICB0cjpub3QoOmxhc3QtY2hpbGQpe1xuICAgICAgICB0ZHtcbiAgICAgICAgICBiYWNrZ3JvdW5kOiAjOTk5O1xuICAgICAgICAgIGlucHV0W3R5cGU9dGV4dF17XG4gICAgICAgICAgICBiYWNrZ3JvdW5kLWNvbG9yOiAjNWE1YTVhO1xuICAgICAgICAgICAgY29sb3I6ICNmZmZmZmY7XG4gICAgICAgICAgICBmb250LXdlaWdodDogYm9sZGVyO1xuICAgICAgICAgIH1cbiAgICAgICAgICBpbnB1dHtcbiAgICAgICAgICAgIGNvbG9yOiAjZmZmZmZmO1xuICAgICAgICAgICAgYmFja2dyb3VuZDogIzk5OTtcbiAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgICAgdGQ6bnRoLWNoaWxkKDRuKzEpLCB0ZDpsYXN0LWNoaWxke1xuICAgICAgICAgIGJhY2tncm91bmQtY29sb3I6ICM1YTVhNWE7XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICB9XG4gIH1cbn0iXX0= */

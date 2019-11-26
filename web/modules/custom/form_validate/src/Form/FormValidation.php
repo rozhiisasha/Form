@@ -46,8 +46,8 @@ class FormValidation extends FormBase {
     ];
     $form['actions']['newtable'] = [
       '#type'   => 'submit',
-      '#value'  => $this->t('add Table'),
-      '#submit' => ['::AddTable'],
+      '#value'  => $this->t('Add Table'),
+      '#submit' => ['::addTable'],
     ];
     $mounth['year'] = 'Year';
     for ($i = 1; $i <= 12; $i++) {
@@ -306,9 +306,10 @@ class FormValidation extends FormBase {
                 }
               }
             }
-            if (count($table1[$y][$i]) == 1) {
-              $form_state->set('valid', FALSE);
-            }
+            /*Output Invalid when table is empty*/
+            /*if (count($table1[$y][$i]) == 1) {
+            $form_state->set('valid', FALSE);
+            }*/
           }
         }
       }
