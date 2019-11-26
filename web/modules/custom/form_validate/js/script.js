@@ -4,15 +4,12 @@ function SumQuart(now) {
   let table = array_key[0];
   let rows = array_key[1];
   let mounth = array_key[2];
-  if(document.getElementById(id).value === '0'){
-    document.getElementById(id).value = '';
-  }
   if ((mounth === '1') || (mounth === '2') || (mounth === '3')) {
     let va = 0;
     for (let i = 1; i <= 3; i++) {
       let val = Number(
           document.getElementById(table + '.' + rows + '.' + i).value);
-      va = va+val;
+      va = va + val;
     }
     va = (va + 1) / 3;
     if (va <= 0.4) {
