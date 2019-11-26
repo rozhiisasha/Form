@@ -296,11 +296,14 @@ class FormValidation extends FormBase {
               foreach ($a as $ka => $va) {
                 foreach ($b as $kb => $vb) {
                   if ($ka == $kb) {
-                    $a1 = array_diff_key($va, $vb);
-                    $b1 = array_diff_key($vb, $va);
-                    if ((!empty($a1)) || (!empty($b1))) {
-                      $form_state->set('valid', FALSE);
-                      break 4;
+                    $c = count($table1[$y + 1][$ka]);
+                    if ($c != 1) {
+                      $a1 = array_diff_key($va, $vb);
+                      $b1 = array_diff_key($vb, $va);
+                      if ((!empty($a1)) || (!empty($b1))) {
+                        $form_state->set('valid', FALSE);
+                        break 4;
+                      }
                     }
                   }
                 }
