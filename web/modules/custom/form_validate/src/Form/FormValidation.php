@@ -119,8 +119,8 @@ class FormValidation extends FormBase {
             $form['mounth'][$y][$i][$key] = [
               '#type'       => 'number',
               '#min'        => 0,
+              '#step'     => 0.001,
               '#width'      => 4,
-              '#attributes' => ['onchange' => 'SumQuart(this)'],
               '#value'      => $value_k,
               '#id'         => $y . '.' . $i . '.' . $key,
               '#name'       => $y . '.' . $i . '.' . $key,
@@ -131,7 +131,7 @@ class FormValidation extends FormBase {
               '#type'       => 'number',
               '#min'        => 0,
               '#width'      => 4,
-              '#attributes' => ['onchange' => 'SumQuart(this)'],
+              '#step'     => 0.001,
               '#id'         => $y . '.' . $i . '.' . $key,
               '#value'      => $value_k,
               '#name'       => $y . '.' . $i . '.' . $key,
@@ -141,8 +141,8 @@ class FormValidation extends FormBase {
             $form['mounth'][$y][$i][$key] = [
               '#type'       => 'number',
               '#min'        => 0,
+              '#step'     => 0.001,
               '#width'      => 4,
-              '#attributes' => ['onchange' => 'SumQuart(this)'],
               '#id'         => $y . '.' . $i . '.' . $key,
               '#value'      => $value_k,
               '#name'       => $y . '.' . $i . '.' . $key,
@@ -152,8 +152,8 @@ class FormValidation extends FormBase {
             $form['mounth'][$y][$i][$key] = [
               '#type'       => 'number',
               '#min'        => 0,
+              '#step'     => 0.001,
               '#width'      => 4,
-              '#attributes' => ['onchange' => 'SumQuart(this)'],
               '#id'         => $y . '.' . $i . '.' . $key,
               '#value'      => $value_k,
               '#name'       => $y . '.' . $i . '.' . $key,
