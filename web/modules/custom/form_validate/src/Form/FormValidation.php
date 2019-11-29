@@ -238,31 +238,10 @@ class FormValidation extends FormBase {
           }
         }
       }
-      $t = 0;
-      $rows = 0;
       for ($y = 0; $y < count($table); $y++) {
         for ($r = 1; $r <= count($table[$y]); $r++) {
-          if ($t != $y) {
-            unset($arr1);
-            unset($row1);
-            $t = $y;
-          }
-          if ($rows != $r) {
-            unset($arr1);
-            $rows = $r;
-          }
-          foreach ($table[$y][$r] as $key => $val) {
-            if (is_numeric($val)) {
-              $arr1[$key] = $val;
-              $row1[$r] = $arr1;
-              $table1[$y] = $row1;
-            }
-            else {
-              $arr1['empty'] = 0;
-              $row1[$r] = $arr1;
-              $table1[$y] = $row1;
-            }
-          }
+          $res[$y][$r] = array_filter($table[$y][$r]);
+          $res[$y][$r]['empty'] = 0;
         }
       }
       for ($y = 0; $y < count($table); $y++) {
@@ -288,15 +267,15 @@ class FormValidation extends FormBase {
         }
       }
       if ($form_state->get('valid')) {
-        for ($y = 0; $y < count($table1); $y++) {
-          for ($i = 0; $i < count($table1[$y]); $i++) {
-            if ($table1[$y + 1] != NULL) {
-              $a = array_intersect_key($table1[$y], $table1[$y + 1]);
-              $b = array_intersect_key($table1[$y + 1], $table1[$y]);
+        for ($y = 0; $y < count($res); $y++) {
+          for ($i = 0; $i < count($res[$y]); $i++) {
+            if ($res[$y + 1] != NULL) {
+              $a = array_intersect_key($res[$y], $res[$y + 1]);
+              $b = array_intersect_key($res[$y + 1], $res[$y]);
               foreach ($a as $ka => $va) {
                 foreach ($b as $kb => $vb) {
                   if ($ka == $kb) {
-                    $c = count($table1[$y + 1][$ka]);
+                    $c = count($res[$y + 1][$ka]);
                     if ($c != 1) {
                       $a1 = array_diff_key($va, $vb);
                       $b1 = array_diff_key($vb, $va);
