@@ -13,22 +13,19 @@ use Drupal\Core\Form\FormStateInterface;
 class FormValidation extends FormBase {
 
   /**
-   * @var.
+   * @var int year.
    */
   public $year;
 
   /**
-   * @return string
+   * {@inheritdoc}
    */
   public function getFormId() {
     return 'form_validation';
   }
 
   /**
-   * @param  array  $form
-   * @param  \Drupal\Core\Form\FormStateInterface  $form_state
-   *
-   * @return array
+   * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $this->year = date('Y');
@@ -214,8 +211,7 @@ class FormValidation extends FormBase {
   }
 
   /**
-   * @param  array  $form
-   * @param  \Drupal\Core\Form\FormStateInterface  $form_state
+   * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $form_state->set('valid', TRUE);
@@ -296,15 +292,12 @@ class FormValidation extends FormBase {
               foreach ($a as $ka => $va) {
                 foreach ($b as $kb => $vb) {
                   if ($ka == $kb) {
-//                    $c = count($table1[$y + 1][$ka]);
-//                    if ($c != 1) {
                     $a1 = array_diff_key($va, $vb);
                     $b1 = array_diff_key($vb, $va);
                     if ((!empty($a1)) || (!empty($b1))) {
                       $form_state->set('valid', FALSE);
                       break 4;
                     }
-//                    }
                   }
                 }
               }
@@ -320,8 +313,7 @@ class FormValidation extends FormBase {
   }
 
   /**
-   * @param  array  $form
-   * @param  \Drupal\Core\Form\FormStateInterface  $form_state
+   * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $valid = $form_state->get('valid');
