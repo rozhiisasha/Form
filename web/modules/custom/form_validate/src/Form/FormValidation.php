@@ -173,48 +173,11 @@ class FormValidation extends FormBase {
   }
 
   /**
-   * Function addRow.
-   *  For add row to table.
-   *
-   * @param  array  $form
-   * @param  \Drupal\Core\Form\FormStateInterface  $form_state
-   */
-  public function addRow(array &$form, FormStateInterface $form_state) {
-    $year = $form_state->get('year');
-    /*find from what table we get request*/
-    foreach ($_POST as $key => $value) {
-      if ($value == 'Add Year') {
-        $key_name = substr($key, -1, 1);
-        /*$key_name now equal number table*/
-        break;
-      }
-    }
-    $year[$key_name]--;
-    $form_state->set('year', $year);
-    /*rebuild table for output new row*/
-    $form_state->setRebuild();
-  }
-
-  /**
-   * Function AddTable.
-   *  Add new table.
-   *
-   * @param  array  $form
-   * @param  \Drupal\Core\Form\FormStateInterface  $form_state
-   */
-  public function addTable(array &$form, FormStateInterface $form_state) {
-    $num_of_table = $form_state->get('num_of_table');
-    $num_of_table++;
-    $form_state->set('num_of_table', $num_of_table);
-    /*rebuild form for output new table*/
-    $form_state->setRebuild();
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $form_state->set('valid', TRUE);
+    $ver = $form_state->getValues();
     if ($_POST['new'] == 'Submit') {
       $t = 0;
       foreach ($_POST as $key => $value) {
@@ -324,6 +287,44 @@ class FormValidation extends FormBase {
     else {
       $messenger->addMessage('Invalid', $messenger::TYPE_ERROR);
     }
+    $form_state->setRebuild();
+  }
+
+  /**
+   * Function addRow.
+   *  For add row to table.
+   *
+   * @param  array  $form
+   * @param  \Drupal\Core\Form\FormStateInterface  $form_state
+   */
+  public function addRow(array &$form, FormStateInterface $form_state) {
+    $year = $form_state->get('year');
+    /*find from what table we get request*/
+    foreach ($_POST as $key => $value) {
+      if ($value == 'Add Year') {
+        $key_name = substr($key, -1, 1);
+        /*$key_name now equal number table*/
+        break;
+      }
+    }
+    $year[$key_name]--;
+    $form_state->set('year', $year);
+    /*rebuild table for output new row*/
+    $form_state->setRebuild();
+  }
+
+  /**
+   * Function AddTable.
+   *  Add new table.
+   *
+   * @param  array  $form
+   * @param  \Drupal\Core\Form\FormStateInterface  $form_state
+   */
+  public function addTable(array &$form, FormStateInterface $form_state) {
+    $num_of_table = $form_state->get('num_of_table');
+    $num_of_table++;
+    $form_state->set('num_of_table', $num_of_table);
+    /*rebuild form for output new table*/
     $form_state->setRebuild();
   }
 
