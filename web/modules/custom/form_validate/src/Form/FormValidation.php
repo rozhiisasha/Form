@@ -13,7 +13,8 @@ use Drupal\Core\Form\FormStateInterface;
 class FormValidation extends FormBase {
 
   /**
-   * @var int year.
+   * @var int
+   *  Current year.
    */
   public $year;
 
@@ -39,7 +40,6 @@ class FormValidation extends FormBase {
       '#name'        => 'new',
       '#value'       => $this->t('Submit'),
       '#button_type' => 'primary',
-      '#formtarget'  => '_self',
     ];
     $form['actions']['newtable'] = [
       '#type'   => 'submit',
@@ -48,7 +48,8 @@ class FormValidation extends FormBase {
     ];
     $mounth['year'] = 'Year';
     for ($i = 1; $i <= 12; $i++) {
-      $mounth[$i] = date('F', mktime(1, 0, 0, $i, 5));
+      $mounth[$i] = \Drupal::service('date.formatter')->format(mktime(1, 0, 0,
+        $i, 5), 'custom', 'F');
       if ($i % 3 == 0) {
         $mounth['q' . $i] = 'Q' . $i / 3;
       }
@@ -70,11 +71,16 @@ class FormValidation extends FormBase {
       for ($i = 1; $i <= $num_of_rows; $i++) {
         $year = $this->year - $i + 1;
         foreach ($mounth as $key => $value) {
-          if ($_POST[$y . '_' . $i . '_' . $key] == NULL) {
-            $value_k = '';
+          if ($_POST[$y . '_' . $i . '_' . $key] != NULL) {
+            $value_k = $_POST[$y . '_' . $i . '_' . $key];
           }
           else {
-            $value_k = $_POST[$y . '_' . $i . '_' . $key];
+            if ($_POST[$key . $y . $i] != NULL) {
+              $value_k = $_POST[$key . $y . $i];
+            }
+            else {
+              $value_k = '';
+            }
           }
           if ($key == 'year') {
             $form['mounth'][$y][$i][$key] = [
@@ -86,16 +92,16 @@ class FormValidation extends FormBase {
           }
           elseif (substr($key, 0, 1) == 'q') {
             $form['mounth'][$y][$i][$key] = [
-              '#type'     => 'textfield',
-              '#size'     => '4',
-              '#min'      => 0,
-              '#value'    => $value_k,
-              '#step'     => 0.001,
+              '#type'       => 'textfield',
+              '#size'       => '4',
+              '#min'        => 0,
+              '#value'      => $value_k,
+              '#step'       => 0.001,
               '#attributes' => [
                 'readonly' => TRUE,
               ],
-              '#id'       => $key . $y . $i,
-              '#name'     => $y . '.' . $i . '.' . $key,
+              '#id'         => $key . $y . $i,
+              '#name'       => $key . $y . $i,
             ];
           }
           elseif ($key == 'ytd') {
@@ -112,7 +118,7 @@ class FormValidation extends FormBase {
               '#id'       => $y . $i . $key,
             ];
           }
-          elseif (($key == 1) || ($key == 2) || ($key == 3)) {
+          else {
             $form['mounth'][$y][$i][$key] = [
               '#type'       => 'number',
               '#min'        => 0,
@@ -120,39 +126,6 @@ class FormValidation extends FormBase {
               '#width'      => 4,
               '#value'      => $value_k,
               '#id'         => $y . '.' . $i . '.' . $key,
-              '#name'       => $y . '.' . $i . '.' . $key,
-            ];
-          }
-          elseif (($key == 4) || ($key == 5) || ($key == 6)) {
-            $form['mounth'][$y][$i][$key] = [
-              '#type'       => 'number',
-              '#min'        => 0,
-              '#width'      => 4,
-              '#step'     => 0.001,
-              '#id'         => $y . '.' . $i . '.' . $key,
-              '#value'      => $value_k,
-              '#name'       => $y . '.' . $i . '.' . $key,
-            ];
-          }
-          elseif (($key == 7) || ($key == 8) || ($key == 9)) {
-            $form['mounth'][$y][$i][$key] = [
-              '#type'       => 'number',
-              '#min'        => 0,
-              '#step'     => 0.001,
-              '#width'      => 4,
-              '#id'         => $y . '.' . $i . '.' . $key,
-              '#value'      => $value_k,
-              '#name'       => $y . '.' . $i . '.' . $key,
-            ];
-          }
-          elseif (($key == 10) || ($key == 11) || ($key == 12)) {
-            $form['mounth'][$y][$i][$key] = [
-              '#type'       => 'number',
-              '#min'        => 0,
-              '#step'     => 0.001,
-              '#width'      => 4,
-              '#id'         => $y . '.' . $i . '.' . $key,
-              '#value'      => $value_k,
               '#name'       => $y . '.' . $i . '.' . $key,
             ];
           }
@@ -165,6 +138,7 @@ class FormValidation extends FormBase {
         ];
 
       }
+      $form['#tree'] = TRUE;
       /*sort, because we must output table after*/
       krsort($form['mounth'][$y]);
     }
@@ -178,66 +152,93 @@ class FormValidation extends FormBase {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $form_state->set('valid', TRUE);
     $ver = $form_state->getValues();
-    if ($_POST['new'] == 'Submit') {
-      $t = 0;
-      foreach ($_POST as $key => $value) {
-        $key_to_value = explode('_', $key);
-        if ($t != $key_to_value[0]) {
-          unset($row);
-          $t = $key_to_value[0];
-        }
-        if (is_numeric($key_to_value[2])) {
-          $arr[] = $value;
-          $row[$key_to_value[1]] = $arr;
-          $table[$key_to_value[0]] = $row;
-          foreach ($arr as $k => $v) {
-            if ($key_to_value[2] == 12) {
-              unset($arr);
-            }
-          }
-        }
+    $tr_el = $form_state->getTriggeringElement()['#type']=='submit'?:NULL;
+    $ver = $ver['mounth'];
+//    $ver = array_filter($ver, $this->filterArray($ver));
+    foreach ($ver as $k => $v) {
+      if (!is_int($k)) {
+        unset($ver[$k]);
       }
-      $t = 0;
-      $rows = 0;
-      for ($y = 0; $y < count($table); $y++) {
-        for ($r = 1; $r <= count($table[$y]); $r++) {
-          if ($t != $y) {
-            unset($arr1);
-            unset($row1);
-            $t = $y;
+      foreach ($ver[$k] as $k2 => $v2) {
+        if (!is_int($k2)) {
+          unset($ver[$k][$k2]);
+        }
+        foreach ($ver[$k][$k2] as $k3 => $v3) {
+          if (!is_int($k3)) {
+            unset($ver[$k][$k2][$k3]);
           }
-          if ($rows != $r) {
-            unset($arr1);
-            $rows = $r;
-          }
-          foreach ($table[$y][$r] as $key => $val) {
-            if (is_numeric($val)) {
-              $arr1[$key] = $val;
-              $row1[$r] = $arr1;
-              $table1[$y] = $row1;
+          else {
+            if (!empty($v3)) {
+              $ver2[$k][$k2][$k3] = $v3;
+
             }
             else {
-              $arr1['empty'] = 0;
-              $row1[$r] = $arr1;
-              $table1[$y] = $row1;
+              $ver2[$k][$k2]['empty'] = 0;
             }
           }
         }
       }
-      for ($y = 0; $y < count($table); $y++) {
+    }
+    if ($_POST['new'] == 'Submit') {
+      //      $t = 0;
+      //      foreach ($_POST as $key => $value) {
+      //        $key_to_value = explode('_', $key);
+      //        if ($t != $key_to_value[0]) {
+      //          unset($row);
+      //          $t = $key_to_value[0];
+      //        }
+      //        if (is_numeric($key_to_value[2])) {
+      //          $arr[] = $value;
+      //          $row[$key_to_value[1]] = $arr;
+      //          $table[$key_to_value[0]] = $row;
+      //          foreach ($arr as $k => $v) {
+      //            if ($key_to_value[2] == 12) {
+      //              unset($arr);
+      //            }
+      //          }
+      //        }
+      //      }
+      //      $t = 0;
+      //      $rows = 0;
+      //      for ($y = 0; $y < count($table); $y++) {
+      //        for ($r = 1; $r <= count($table[$y]); $r++) {
+      //          if ($t != $y) {
+      //            unset($arr1);
+      //            unset($row1);
+      //            $t = $y;
+      //          }
+      //          if ($rows != $r) {
+      //            unset($arr1);
+      //            $rows = $r;
+      //          }
+      //          foreach ($table[$y][$r] as $key => $val) {
+      //            if (is_numeric($val)) {
+      //              $arr1[$key] = $val;
+      //              $row1[$r] = $arr1;
+      //              $table1[$y] = $row1;
+      //            }
+      //            else {
+      //              $arr1['empty'] = 0;
+      //              $row1[$r] = $arr1;
+      //              $table1[$y] = $row1;
+      //            }
+      //          }
+      //        }
+      //      }
+      for ($y = 0; $y < count($ver); $y++) {
         $arra = [];
-        for ($r = 1; $r <= count($table[$y]); $r++) {
-          krsort($table[$y][$r]);
-          $arra = array_merge($arra, $table[$y][$r]);
+        for ($r = 1; $r <= count($ver[$y]); $r++) {
+          krsort($ver[$y][$r]);
+          $arra = array_merge($arra, $ver[$y][$r]);
         }
-        $table[$y] = $arra;
+        $ver[$y] = $arra;
         unset($arra);
-        for ($i = 0; $i < count($table[$y]); $i++) {
-          if (is_numeric($table[$y][$i])) {
+        for ($i = 0; $i < count($ver[$y]); $i++) {
+          if (is_numeric($ver[$y][$i])) {
             $a = $i;
-            if (!is_numeric($table[$y][$i + 1])) {
-              for ($i = $a + 1; $i < count($table[$y]); $i++) {
-                if (is_numeric($table[$y][$i])) {
+            if (!is_numeric($ver[$y][$i + 1])) {
+              for ($i = $a + 1; $i < count($ver[$y]); $i++) {
+                if (is_numeric($ver[$y][$i])) {
                   $form_state->set('valid', FALSE);
                   break 2;
                 }
@@ -246,12 +247,13 @@ class FormValidation extends FormBase {
           }
         }
       }
+
       if ($form_state->get('valid')) {
-        for ($y = 0; $y < count($table1); $y++) {
-          for ($i = 0; $i < count($table1[$y]); $i++) {
-            if ($table1[$y + 1] != NULL) {
-              $a = array_intersect_key($table1[$y], $table1[$y + 1]);
-              $b = array_intersect_key($table1[$y + 1], $table1[$y]);
+        for ($y = 0; $y < count($ver2); $y++) {
+          for ($i = 0; $i < count($ver2[$y]); $i++) {
+            if ($ver2[$y + 1] != NULL) {
+              $a = array_intersect_key($ver2[$y], $ver2[$y + 1]);
+              $b = array_intersect_key($ver2[$y + 1], $ver2[$y]);
               foreach ($a as $ka => $va) {
                 foreach ($b as $kb => $vb) {
                   if ($ka == $kb) {
