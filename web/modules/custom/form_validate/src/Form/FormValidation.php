@@ -321,7 +321,7 @@ class FormValidation extends FormBase {
   /**
    * Function isNumeric.
    *
-   * @param  mixed  $var
+   * @param mixed $var
    *   Variable for validate.
    *
    * @return bool
