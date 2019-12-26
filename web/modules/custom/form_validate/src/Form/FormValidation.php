@@ -2,6 +2,7 @@
 
 namespace Drupal\form_validate\Form;
 
+use Drupal;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
@@ -50,7 +51,7 @@ class FormValidation extends FormBase {
     ];
     $mounth['year'] = 'Year';
     for ($i = 1; $i <= 12; $i++) {
-      $mounth[$i] = \Drupal::service('date.formatter')->format(mktime(1, 0, 0,
+      $mounth[$i] = Drupal::service('date.formatter')->format(mktime(1, 0, 0,
         $i, 5), 'custom', 'F');
       if ($i % 3 == 0) {
         $mounth['q' . $i] = 'Q' . $i / 3;
@@ -74,16 +75,11 @@ class FormValidation extends FormBase {
       for ($i = 1; $i <= $num_of_rows; $i++) {
         $year = $this->year - $i + 1;
         foreach ($mounth as $key => $value) {
-          if (!empty($_POST[$y . '_' . $i . '_' . $key])) {
-            $value_k = $_POST[$y . '_' . $i . '_' . $key];
-          }
-          else {
-            if (!empty($_POST[$key . $y . $i])) {
-              $value_k = $_POST[$key . $y . $i];
-            }
-            else {
-              $value_k = '';
-            }
+          $value_k = !empty($_POST[$y . '_' . $i . '_' . $key]) ? $_POST[$y
+          . '_' . $i . '_' . $key] : '';
+          if (empty($value_k)) {
+            $value_k = !empty($_POST[$key . $y . $i]) ? $_POST[$key . $y . $i]
+              : '';
           }
           if ($key == 'year') {
             $form['mounth'][$y][$i][$key] = [
@@ -156,16 +152,16 @@ class FormValidation extends FormBase {
     $tr_el = $form_state->getTriggeringElement()['#name'] == 'new'
       ?: NULL;
     if ($tr_el) {
-      $t = 0;
+      $number_table = 0;
       $form_state->set('valid', TRUE);
       foreach ($form_state->getUserInput() as $key => $value) {
         // Explode $key from input, it was look: table_row_element.
         $key_to_value = explode('_', $key);
         // Validate number of table.
-        if ($t != $key_to_value[0] && $this->isNumeric($key_to_value[0])) {
+        if ($number_table != $key_to_value[0] && $this->isNumeric($key_to_value[0])) {
           unset($row);
           unset($row2);
-          $t = $key_to_value[0];
+          $number_table = $key_to_value[0];
         }
         // Create two array for validation.
         if (!empty($key_to_value[2])) {
@@ -204,7 +200,7 @@ class FormValidation extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $valid = $form_state->get('valid');
-    $messenger = \Drupal::messenger();
+    $messenger = Drupal::messenger();
     if ($valid) {
       $messenger->addMessage('Valid', $messenger::TYPE_STATUS);
     }
@@ -218,7 +214,9 @@ class FormValidation extends FormBase {
    * Function addRow.
    *
    * @param array $form
+   *   An associative array containing the structure of the form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
    */
   public function addRow(array &$form, FormStateInterface $form_state) {
     $year = $form_state->get('year');
@@ -230,7 +228,9 @@ class FormValidation extends FormBase {
         break;
       }
     }
-    $year[$key_name]--;
+    if (isset($key_name)) {
+      $year[$key_name]--;
+    }
     $form_state->set('year', $year);
     // Rebuild table for output new row.
     $form_state->setRebuild();
@@ -240,7 +240,9 @@ class FormValidation extends FormBase {
    * Function AddTable.
    *
    * @param array $form
+   *   An associative array containing the structure of the form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
    */
   public function addTable(array &$form, FormStateInterface $form_state) {
     $num_of_table = $form_state->get('num_of_table');
@@ -255,24 +257,20 @@ class FormValidation extends FormBase {
    *
    * @param  array  $ver
    *   Array fo validation.
-   *
    * @param  \Drupal\Core\Form\FormStateInterface  $form_state
+   *   The current state of the form.
    */
   public function validateRows(array $ver, FormStateInterface $form_state) {
     for ($y = 0; $y < count($ver); $y++) {
-      for ($i = 0; $i < count($ver[$y]); $i++) {
-        // Search first number in table.
-        if ($this->isNumeric($ver[$y][$i])) {
-          // Remember key.
-          $a = $i;
-          // If next element not numeric, search from next`s element.
-          if (!$this->isNumeric($ver[$y][$i + 1])) {
-            for ($i = $a + 1; $i < count($ver[$y]); $i++) {
-              if ($this->isNumeric($ver[$y][$i])) {
-                $form_state->set('valid', FALSE);
-                return;
-              }
-            }
+      $ver[$y] = array_filter($ver[$y]);
+      $first_el = key($ver[$y]);
+      end($ver[$y]);
+      $last_el = key($ver[$y]);
+      if (isset($first_el,$last_el)) {
+        for ($i = $first_el; $i <= $last_el; $i++) {
+          if (empty($ver[$y][$i])) {
+            $form_state->set('valid', FALSE);
+            return;
           }
         }
       }
@@ -284,21 +282,21 @@ class FormValidation extends FormBase {
    *
    * @param  array  $ver2
    *   Array fo validation.
-   *
    * @param  \Drupal\Core\Form\FormStateInterface  $form_state
+   *   The current state of the form.
    */
   public function validateTable(array $ver2, FormStateInterface $form_state) {
     foreach ($ver2 as $key => $value) {
       if (!empty($ver2[$key + 1])) {
         // Find common rows.
-        $b = array_intersect_key($ver2[$key + 1], $ver2[$key]);
-        $a = array_intersect_key($ver2[$key], $ver2[$key + 1]);
-        for ($i = 1; $i <= count($a); $i++) {
+        $common_rows_sec_first = array_intersect_key($ver2[$key + 1], $ver2[$key]);
+        $common_rows_first_sec = array_intersect_key($ver2[$key], $ver2[$key + 1]);
+        for ($i = 1; $i <= count($common_rows_first_sec); $i++) {
           // In common rows, find is there different key.
-          $a1 = array_diff_key($a[$i], $b[$i]);
-          $b1 = array_diff_key($b[$i], $a[$i]);
+          $diff_key_first_sec = array_diff_key($common_rows_first_sec[$i], $common_rows_sec_first[$i]);
+          $diff_key_sec_first = array_diff_key($common_rows_sec_first[$i], $common_rows_first_sec[$i]);
           // If common rows has different key - table non validate.
-          if ((!empty($a1)) || (!empty($b1))) {
+          if ((!empty($diff_key_first_sec)) || (!empty($diff_key_sec_first))) {
             $form_state->set('valid', FALSE);
             return;
           }
@@ -314,8 +312,8 @@ class FormValidation extends FormBase {
    *   Return current year.
    */
   public function getYear() {
-    $current_date = \Drupal::time()->getCurrentTime();
-    $year = \Drupal::service('date.formatter')
+    $current_date = Drupal::time()->getCurrentTime();
+    $year = Drupal::service('date.formatter')
       ->format($current_date, 'custom', 'Y');
     return $year;
   }
